@@ -1,0 +1,10 @@
+{
+    "name": "jsonParser",
+    "version": "0.1.0",
+    "deps":{
+        "dynamic":[ 
+        ],
+        "static":[
+        ]
+    }
+}
