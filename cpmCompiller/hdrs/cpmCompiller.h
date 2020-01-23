@@ -11,4 +11,4 @@ typedef struct cpmConfig{
 cpmConfig   readConfig();
 moduleInfo  parseJsonInfo(str path); 
 str         getModuleFromSpot (str currentSpot, cpmConfig conf, str name);
-str         generateAssemblingStr(str modPath);
+str         generateAssemblingStr(str modPath,str* linker,str* includedFiles);

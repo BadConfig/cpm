@@ -1,5 +1,22 @@
 #include "../hdrs/API.h"
 
+uint8_t aphinString__substOf(str substr, str string){
+    size_t i = 0,
+           j = 0;
+    while ( j < string.size ){
+        if ( string.str[j] == substr.str[i] )   ++i;
+        if ( i == substr.size ){
+            aphinString__drop(substr);
+            aphinString__drop(string);
+            return 1;
+        }
+        ++j;
+    }
+    aphinString__drop(substr);
+    aphinString__drop(string);
+    return 0;
+}
+
 str aphinString__changeFormat(str path,str fmt){
     size_t i = path.size-1;
     for(; i >= 0 && path.str[i] != '/'; --i){

@@ -1,3 +1,4 @@
+#pragma once
 #include "deps.h"
 
 typedef struct moduleInfo{
@@ -12,10 +13,10 @@ typedef struct moduleInfo{
     str path;
 } moduleInfo;
 
-uint8_t     cpmCompiller__build();
-uint8_t     cpmCompiller__buildModule(moduleInfo mod);
+str         cpmCompiller__build(str* pathToMod);
+uint8_t     cpmCompiller__buildModule(moduleInfo mod,str* linkingStr,str* includedFiles);
 // creates executable test file using test folder
 uint8_t     cpmCompiller__buildTests(str modName);
 // creates an app if main is found in your module
-uint8_t     cpmCompiller__buildApp(str modName);
+uint8_t     cpmCompiller__buildApp(str* pathToMod, str* COMPILE_FLAGS);
 

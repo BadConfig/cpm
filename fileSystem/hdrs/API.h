@@ -1,3 +1,6 @@
+#pragma once
+#ifndef fileSystem
+#define fileSystem
 #include "deps.h"
 /* global functions:
  * this module presents tools
@@ -12,3 +15,4 @@ void        fileSystem__wrfile(uint32_t desk, str data);
 FILE*       fileSystem__open(str path);
 uint32_t    fileSystem__openInDir(str dir, str file);
 void        fileSystem__close(FILE* desk);
+#endif

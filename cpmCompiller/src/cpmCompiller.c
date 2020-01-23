@@ -122,19 +122,37 @@ moduleInfo parseJsonInfo(str path){
     free(buff);
     return t;
 }
+uint8_t cpmCompiller__buildApp(str* pathToMod,str* COMPILE_FLAGS){
+    str linkString = cpmCompiller__build(pathToMod);
+    if ( COMPILE_FLAGS != NULL )
+        linkString = aphinString__append(3,
+            linkString,
+            aphinString__mkstr(" "),
+            *COMPILE_FLAGS);
+    system(linkString.str);
+    return 1;
+}
+str cpmCompiller__build(str* pathToMod){
 
-uint8_t cpmCompiller__build(){
-
-    str modPath         = detectModulePath();   
+    str modPath;
+    if ( pathToMod == NULL )    modPath = detectModulePath();   
+    else                        modPath = *pathToMod;
     moduleInfo modInf   = parseJsonInfo(aphinString__append(3,
                 modPath,
                 aphinString__mkstr("/"),
                 aphinString__mkstr("mod.json")));
     modInf.path         = modPath;
-    cpmCompiller__buildModule(modInf);
+    str linkingStr      = aphinString__append(4,
+                                    aphinString__mkstr("gcc -o "),
+                                    aphinString__mkstr(modPath.str),
+                                    aphinString__mkstr("/build/relise/"),
+                                    aphinString__mkstr(modInf.name.str));
+    str         includedFiles = aphinString__mkstr(" ");
+    cpmCompiller__buildModule(modInf,&linkingStr,&includedFiles);
+    return linkingStr;
 }
 
-uint8_t cpmCompiller__buildModule(moduleInfo mod){
+uint8_t cpmCompiller__buildModule(moduleInfo mod, str* linkingStr,str* includedFiles){
     for(size_t i = 0; i < mod.dep.static_s; ++i){
         str depPath = getModuleFromSpot(
                 aphinString__upDir(detectModulePath()),
@@ -143,22 +161,18 @@ uint8_t cpmCompiller__buildModule(moduleInfo mod){
         depPath = aphinString__append(2,
                 depPath,
                 aphinString__mkstr("/mod.json"));
-        cpmCompiller__buildModule(parseJsonInfo(depPath));
+        cpmCompiller__buildModule(parseJsonInfo(depPath),linkingStr,includedFiles);
     } 
     mod.path = getModuleFromSpot(
             aphinString__upDir(detectModulePath()),
             readConfig(),
             aphinString__mkstr(mod.name.str));
-    str commandString = generateAssemblingStr(mod.path);
-    printf("COMMAND FOR %s is:\n%s\n",mod.name.str,commandString.str);
+    str commandString = generateAssemblingStr(mod.path,linkingStr,includedFiles);
     system(commandString.str);
     aphinString__drop(commandString);
 }
-str generateLinkingStr(){
 
-}
-
-str generateAssemblingStr(str modPath){
+str generateAssemblingStr(str modPath,str* linker,str* includedFiles){
     size_t          toComp  = 0;
     str             commOut = aphinString__mkstr(" -o "),
                     commIn  = aphinString__mkstr(" ");
@@ -179,6 +193,7 @@ str generateAssemblingStr(str modPath){
                     aphinString__mkstr("."))) continue;
         if (!aphinString__cmpstr(aphinString__mkstr(entry->d_name),
                     aphinString__mkstr(".."))) continue;
+
        sourcesPath = aphinString__append(2,
                aphinString__mkstr(srcDir.str),
                aphinString__mkstr(entry->d_name));
@@ -189,6 +204,15 @@ str generateAssemblingStr(str modPath){
                    aphinString__mkstr(".o")));
        stat(sourcesPath.str,&sourceinfo);
        int f = stat(objectsPath.str,&objInfo);
+        if (!aphinString__substOf(aphinString__mkstr(entry->d_name),aphinString__mkstr(includedFiles->str)))
+       *linker = aphinString__append(3,
+               *linker,
+               aphinString__mkstr(" "),
+               aphinString__mkstr(objectsPath.str));
+        *includedFiles = aphinString__append(3,
+            *includedFiles,
+            aphinString__mkstr(" "),
+            aphinString__mkstr(sourcesPath.str));
        if ( f == -1 || objInfo.st_mtim.tv_sec < sourceinfo.st_mtim.tv_sec ){
            commIn   = aphinString__append(3,
                         commIn,

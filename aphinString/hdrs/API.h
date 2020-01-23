@@ -1,4 +1,6 @@
 #pragma once
+#ifndef aphinString
+#define aphinString
 #include "deps.h"
 
 typedef struct str{
@@ -19,3 +21,5 @@ void    aphinString__drop(str);
 str     aphinString__upDir(str dir);
 str     aphinString__cpyBytes(char* from, size_t size);
 str     aphinString__changeFormat(str path,str fmt);
+uint8_t aphinString__substOf(str substr,str string);
+#endif
