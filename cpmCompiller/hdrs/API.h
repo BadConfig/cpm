@@ -14,6 +14,7 @@ typedef struct moduleInfo{
 } moduleInfo;
 
 str         cpmCompiller__build(str* pathToMod);
+void        cpmCompiller__refresh();
 uint8_t     cpmCompiller__buildModule(moduleInfo mod,str* linkingStr,str* includedFiles);
 // creates executable test file using test folder
 uint8_t     cpmCompiller__buildTests(str modName);

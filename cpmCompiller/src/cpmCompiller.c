@@ -1,5 +1,29 @@
 #include "../hdrs/cpmCompiller.h"
 
+void cpmCompiller__refresh(){
+    str path = aphinString__append(2,detectModulePath(),aphinString__mkstr("/mod.json"));
+    str deps = aphinString__append(2,detectModulePath(),aphinString__mkstr("/hdrs/deps.h"));
+    str answ;
+    moduleInfo inf = parseJsonInfo(path);
+    str p;
+    FILE* d = fopen(deps.str,"w");
+    for(size_t i = 0; i < inf.dep.static_s; ++i ){
+        p = getModuleFromSpot(
+            aphinString__upDir(detectModulePath()),
+           readConfig(),
+           aphinString__mkstr(inf.dep.static_d[i].str)); 
+        answ = aphinString__append(3,
+                aphinString__mkstr("#include \""),
+                p,
+                aphinString__mkstr("/hdrs/API.h\"\n"));
+        fwrite(answ.str,1,answ.size,d); 
+        aphinString__drop(answ);
+    }
+    fclose(d);
+    aphinString__drop(path);
+    aphinString__drop(deps);
+}
+
 cpmConfig readConfig(){
     str home = aphinString__append(
             2,
