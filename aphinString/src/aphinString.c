@@ -4,16 +4,16 @@ uint8_t aphinString__substOf(str substr, str string){
     size_t i = 0,
            j = 0;
     while ( j < string.size ){
-        if ( string.str[j] == substr.str[i] )   ++i;
+        i = string.str[j] == substr.str[i] ? i+1 : 0;
         if ( i == substr.size ){
-            aphinString__drop(substr);
-            aphinString__drop(string);
+            drop(substr);
+            drop(string);
             return 1;
         }
         ++j;
     }
-    aphinString__drop(substr);
-    aphinString__drop(string);
+    drop(substr);
+    drop(string);
     return 0;
 }
 
@@ -22,11 +22,11 @@ str aphinString__changeFormat(str path,str fmt){
     for(; i >= 0 && path.str[i] != '/'; --i){
         if( path.str[i] == '.'){
             path.str[i] = '\0';
-            path = aphinString__mkstr(path.str); 
+            path = s(path.str); 
             break;
         }
     }
-    path = aphinString__append(2, path, fmt);
+    path = a(2, path, fmt);
     return path;
 }
 
@@ -43,22 +43,22 @@ str aphinString__upDir(str dir){
     for(size_t i = dir.size-1; i >= 0; --i)
         if ( dir.str[i] == '/' ){
             dir.str[i] = '\0';
-            str t = aphinString__mkstr(dir.str);
-            aphinString__drop(dir);
+            str t = s(dir.str);
+            drop(dir);
             return t;
         }
     dir.size = 0;
     return dir;
 }
 
-int8_t aphinString__cmpstr(str a, str b){
+int8_t cmp(str a, str b){
     if ( a.size != b.size ) return -1;
     for (size_t i = 0; i < a.size; ++i)
         if ( a.str[i] != b.str[i] ) return -1;
     return 0;
 }
 
-str aphinString__append(size_t count, ...){
+str a(size_t count, ...){
     va_list strings_pointer;
     va_start(strings_pointer,count);
     size_t total_size = 0;
@@ -75,14 +75,14 @@ str aphinString__append(size_t count, ...){
         for(size_t j = 0; j < cu.size; ++j,++a){
            *(t.str+a) = *(cu.str+j); 
         }
-        aphinString__drop(cu);
+        drop(cu);
     }
     va_end(strings_pointer);
     *(t.str+t.size) = '\0'; 
     return t;
 }
 
-str aphinString__mkstr(char* lit){
+str s(char* lit){
     size_t str_size = 0;
     for(;*(lit+str_size) != '\0';++str_size);
     str t;
@@ -94,7 +94,7 @@ str aphinString__mkstr(char* lit){
     *(t.str+t.size) = '\0';
     return t;
 }
-void aphinString__drop(str string){
+void drop(str string){
     free(string.str);
     return;
 }

@@ -1,10 +1,10 @@
 #include "../hdrs/API.h"
-str fileSystem__pwd(){  
+str pwd(){  
     char buff[1024];
     getcwd(buff,sizeof(buff));
-    return aphinString__mkstr(buff); 
+    return s(buff); 
 }
-int fileSystem__mkfile(str path){
+int makeFile(str path){
     uv_loop_t *loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
     uv_fs_t* req    = (uv_fs_t*)malloc(sizeof(uv_fs_t));
 
@@ -17,7 +17,7 @@ int fileSystem__mkfile(str path){
     free(req);
     return t;
 }
-str fileSystem__rdfile(FILE* desk, int64_t offset, int64_t bytesToRead){
+str readFile(FILE* desk, int64_t offset, int64_t bytesToRead){
     char buff[bytesToRead];
     char c = 'a';
     int i = 0;
@@ -26,9 +26,9 @@ str fileSystem__rdfile(FILE* desk, int64_t offset, int64_t bytesToRead){
         buff[i] = c; 
     }
     buff[i+1] = '\0';
-    return aphinString__mkstr(buff);
+    return s(buff);
 }
-void fileSystem__mkdir(str path){
+void makeDir(str path){
     uv_loop_t *loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
     uv_fs_t* req    = (uv_fs_t*)malloc(sizeof(uv_fs_t));
 
@@ -41,3 +41,5 @@ void fileSystem__mkdir(str path){
     free(req);
     return;
 }
+
+
