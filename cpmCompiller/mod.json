@@ -1,0 +1,13 @@
+{
+    "name": "cpmCompiller",
+    "version": "0.1.0",
+    "deps":{
+        "dynamic":[ 
+        ],
+        "static":[
+            "aphinString",
+            "jsonParser",
+            "fileSystem"
+        ]
+    }
+}
