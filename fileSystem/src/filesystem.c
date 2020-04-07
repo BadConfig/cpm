@@ -1,45 +1,52 @@
 #include "../hdrs/API.h"
-str pwd(){  
+err pwd(){  
     char buff[1024];
     getcwd(buff,sizeof(buff));
-    return s(buff); 
+    Return(s(buff)); 
 }
-int makeFile(str path){
-    uv_loop_t *loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
-    uv_fs_t* req    = (uv_fs_t*)malloc(sizeof(uv_fs_t));
 
-    uv_loop_init(loop); 
-    int t = uv_fs_open(loop,req,path.str,O_RDWR,0777,NULL);
-    uv_run(loop,UV_RUN_DEFAULT);
-    uv_loop_close(loop);
-
-    free(loop);
-    free(req);
-    return t;
+void pwdError(err e,void* d){
+    printf("<!>:error geting present working directory from env var\n");
+    PANIC;
 }
-str readFile(FILE* desk, int64_t offset, int64_t bytesToRead){
-    char buff[bytesToRead];
-    char c = 'a';
-    int i = 0;
-    for(i = 0; i < bytesToRead && c != EOF; ++i){
-        char c  = fgetc(desk);
-        buff[i] = c; 
+
+void openFileError(err e,void* d){
+    printf("<!>:can't open openFileError\n");
+    PANIC;
+}
+
+
+
+void readingFileError(err e,void* d){
+    printf("can't read the whole file\n");
+    PANIC;
+}
+err readFile(str path){
+    FILE* d = fopen(path.str,"rb");
+    if( d == NULL) Error(openFileError);
+    fseek(d,0,SEEK_END);
+    size_t fileSize = ftell(d);
+    char* buff = (char*)malloc(fileSize);
+    rewind(d);
+    size_t result = fread(buff,1,fileSize,d);
+    if (result != fileSize) Error(readingFileError);
+    Return(strn(buff,fileSize));
+}
+err makeDir(str path){
+
+    if ( !system(NULL) ){
+        Error(noCommandInterpreter);
     }
-    buff[i+1] = '\0';
-    return s(buff);
+    str command = strAdd(2,s(" mkdir "),path);
+    system(command.str);
+    strDrop(command);
+    Return(NULL);
 }
-void makeDir(str path){
-    uv_loop_t *loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
-    uv_fs_t* req    = (uv_fs_t*)malloc(sizeof(uv_fs_t));
 
-    uv_loop_init(loop); 
-    uv_fs_mkdir(loop,req,path.str,0777,NULL);
-    uv_run(loop,UV_RUN_DEFAULT);
-    uv_loop_close(loop);
-
-    free(loop);
-    free(req);
-    return;
+void noCommandInterpreter(err e, void* d){
+    printf("there is no intepreter found...\n\
+    we require using system()\n");
+    PANIC;
 }
 
 

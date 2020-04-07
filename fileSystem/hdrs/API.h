@@ -1,3 +1,4 @@
+#pragma once
 #include "deps.h"
 #include "libs.h"
 /* global functions:
@@ -5,7 +6,12 @@
  * to work with creating etc
  * dirs files
  */
-str         pwd();
-void        makeDir(str path);
-str         readFile(FILE* desk, int64_t offset, int64_t bytesToRead);
-void        writeFile(uint32_t desk, str data);
+err         pwd();
+err         makeDir(str path);
+err         readFile(str path);
+err         writeFile(str path, str data);
+
+// error handler
+void pwdError(err e,void* d);
+void openFileError(err e,void* d);
+void noCommandInterpreter(err e, void* d);

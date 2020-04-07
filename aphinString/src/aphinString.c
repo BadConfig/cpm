@@ -1,23 +1,26 @@
 #include "../hdrs/API.h"
 
-uint8_t aphinString__substOf(str substr, str string){
-    size_t i = 0,
-           j = 0;
-    while ( j < string.size ){
-        i = string.str[j] == substr.str[i] ? i+1 : 0;
-        if ( i == substr.size ){
-            drop(substr);
-            drop(string);
-            return 1;
+char* strSubstr(str substr, str string){
+    for(size_t i = 0, j = 0; i < string.size; ++i ){
+        if (substr.str[j] == string.str[i]){
+            ++j;
+            if ( j == substr.size){
+                strDrop(substr);
+                strDrop(string);
+                return string.str+i-j;
+            }
+            continue;
         }
-        ++j;
+        else{
+            j = 0;
+        }
     }
-    drop(substr);
-    drop(string);
-    return 0;
+    strDrop(string);
+    strDrop(substr);
+    return NULL;
 }
 
-str aphinString__changeFormat(str path,str fmt){
+str strChExt(str path,str ext){
     size_t i = path.size-1;
     for(; i >= 0 && path.str[i] != '/'; --i){
         if( path.str[i] == '.'){
@@ -26,39 +29,38 @@ str aphinString__changeFormat(str path,str fmt){
             break;
         }
     }
-    path = a(2, path, fmt);
+    path = strAdd(2, path, ext);
     return path;
 }
 
-str aphinString__cpyBytes(char* from, size_t size){
+str strn(char* lit, size_t n){
     str t;
-    t.str = (char*)malloc(size);
-    t.size = size;
-
-    for(size_t i = 0; i < size; t.str[i] = from[i],++i);
+    t.str = (char*)malloc(n);
+    t.size = n;
+    for(size_t i = 0; i < n; t.str[i] = lit[i],++i);
     return t;
 }
 
-str aphinString__upDir(str dir){
+str strUpDir(str dir){
     for(size_t i = dir.size-1; i >= 0; --i)
         if ( dir.str[i] == '/' ){
             dir.str[i] = '\0';
             str t = s(dir.str);
-            drop(dir);
+            strDrop(dir);
             return t;
         }
     dir.size = 0;
     return dir;
 }
 
-int8_t cmp(str a, str b){
-    if ( a.size != b.size ) return -1;
-    for (size_t i = 0; i < a.size; ++i)
-        if ( a.str[i] != b.str[i] ) return -1;
+int8_t strCmp(str a, str b){
+    for (size_t i = 0; i < a.size && i < b.size; ++i)
+        if ( a.str[i] != b.str[i] ) 
+            return a.str[i]-b.str[i];
     return 0;
 }
 
-str a(size_t count, ...){
+str strAdd(size_t count, ...){
     va_list strings_pointer;
     va_start(strings_pointer,count);
     size_t total_size = 0;
@@ -75,7 +77,7 @@ str a(size_t count, ...){
         for(size_t j = 0; j < cu.size; ++j,++a){
            *(t.str+a) = *(cu.str+j); 
         }
-        drop(cu);
+        strDrop(cu);
     }
     va_end(strings_pointer);
     *(t.str+t.size) = '\0'; 
@@ -94,7 +96,18 @@ str s(char* lit){
     *(t.str+t.size) = '\0';
     return t;
 }
-void drop(str string){
+void strDrop(str string){
     free(string.str);
     return;
+}
+
+str strPath(uint32_t count, ...){
+    va_list string;
+    va_start(string,count);
+    str res;
+    res = s("");
+    for(uint32_t i = 0; i < count; ++i){
+        res = strAdd(3,res,s("/"),va_arg(string,str));
+    }
+    return res;
 }

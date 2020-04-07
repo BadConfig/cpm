@@ -1,5 +1,6 @@
 #pragma once
 #include "deps.h"
+#include "libs.h"
 
 typedef struct str{
     size_t size;// string length
@@ -12,13 +13,21 @@ typedef struct str{
  * dirs files
  */
 
-// different ways to make strings
+// creates strings from char* buffer till '\0'
 str     s(char* lit);
-str     a(size_t count, ...); // uses str typa as args
-int8_t  cmp(str a, str b);
-void    drop(str);
-str     aphinString__upDir(str dir);
-str     aphinString__cpyBytes(char* from, size_t size);
-str     aphinString__changeFormat(str path,str fmt);
-uint8_t aphinString__substOf(str substr,str string);
-
+// same, from n characters ! works bit faster
+str     strn(char* lit, size_t n);
+// input: str typed strings, free them, returns their concatination
+str     strAdd(size_t count, ...); 
+// returns the diffenence between first not same symbols
+int8_t  strCmp(str a, str b);
+// free the string
+void    strDrop(str);
+// path up
+str     strUpDir(str dir);
+// changes file extensision
+str     strChExt(str path,str ext);
+// look for substing returns the addr of first match
+char*   strSubstr(str substr,str string);
+// creates path from strings
+str     strPath(uint32_t count, ...);

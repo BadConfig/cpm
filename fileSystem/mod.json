@@ -5,6 +5,8 @@
         "dynamic":[ 
         ],
         "static":[
+            "errors",
+            "aphinString"
         ]
     }
 }

@@ -1,7 +1,7 @@
 #include "../hdrs/remoteControll.h"
 
 str get_url(str modName){
-    str gitList = a(2,s(getenv("HOME")),s("/.cpmModules/modList"));
+    str gitList = strAdd(2,s(getenv("HOME")),s("/.cpmModules/modList"));
     FILE* desk = fopen(gitList.str,"r");
     if (desk == NULL)   printf("error opening\n");
     fseek(desk,0,SEEK_END);
@@ -16,7 +16,7 @@ str get_url(str modName){
         b[j] = buff[i];
         if ( b[j] == ' ' ){
             b[j] = '\0';
-            if ( cmp(s(modName.str),s(b)) == 0 ){
+            if ( strCmp(s(modName.str),s(b)) == 0 ){
                 for( j = 0; buff[i] != '\n'; ++j,++i ){
                     b[j] = buff[i];
                 }
@@ -33,7 +33,7 @@ str get_url(str modName){
 }
 
 void remoteControll__clone(str modName){
-    str git_clone = a(6,s("git clone "),get_url(modName),
+    str git_clone = strAdd(6,s("git clone "),get_url(modName),
             s(" "),s(getenv("HOME")),s("/.cpmModules/"),s(modName.str));
     system(git_clone.str);
 }
